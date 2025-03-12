@@ -1,5 +1,4 @@
-# 만휘 개인 클러스터링 작업 폴더
-setwd("C:/Users/erich/Desktop/HYU/학술제")
+setwd("path/to/your/wd")
 
 load_packages <- function(){
   #install.packages("fastcluster")  
@@ -15,10 +14,10 @@ packageVersion("factoextra")
 
 load_packages()
 
-dropbox_data_folder_path <- "C:/Users/erich/Dropbox/Worak/"
+dropbox_data_folder_path <- "path/to/dropbox/folder"
 #similarity 저장되어있는 폴더
 
-data_folder_path <- "C:/Users/erich/Desktop/HYU/학술제/"
+data_folder_path <- "path/to/your/wd"
 #결과 저장 폴더위치
 
 sym_spatial <- read.csv(paste0(dropbox_data_folder_path, "result/2024.10.3/sym_spatial.csv"))
