@@ -165,7 +165,7 @@ doParallel::registerDoParallel(cl)       # 병렬 백엔드 등록
 
 ## Space -------------------------------------------------------------------
 space_sim <- foreach(i = 1:data_length, 
-                       .packages = c("geodist"),
+                       .packages = c("foreach", "geodist"),
                        .combine = rbind) %dopar% {
                          foreach(j = 1:data_length,
                                  .combine = "c") %do% {
@@ -211,3 +211,4 @@ time_sim <- foreach(i = 1:data_length,
 
 
 write.csv(time_sim, "path/to/save/time_sim.csv")
+
