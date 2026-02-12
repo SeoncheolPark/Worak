@@ -150,7 +150,7 @@ library(foreach)
 library(doParallel)
 
 df <- readRDS("path/to/lastRDS.rds")
-data_length <- len(df) #939
+data_length <- length(df) #939
 
 space_sim <- data.frame(matrix(0, nrow = data_length, ncol = data_length))
 velocity_sim <- data.frame(matrix(0, nrow = data_length, ncol = data_length))
@@ -208,5 +208,6 @@ time_sim <- foreach(i = 1:data_length,
                                 similarity_time(p1, p2)$similarity_obj1
                               }
                     }
+
 
 write.csv(time_sim, "path/to/save/time_sim.csv")
