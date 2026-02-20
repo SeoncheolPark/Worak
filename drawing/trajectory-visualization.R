@@ -1,0 +1,130 @@
+library(ggplot2)
+library(gridExtra)
+library(tidyverse)
+library(raster)
+library(OpenStreetMap)
+#library(hms) #time similarity 그림 그리는데 필요
+library(lubridate)
+library(sf)
+library(hms)
+library(scales)
+library(grid)
+
+
+RDS <- readRDS("C:/Users/erich/Dropbox/Worak/lastRDS.rds")
+
+windowsFonts(TimesNewer = windowsFont("Times Newer Roman"))
+
+# 한 trajectory의 값들 시각화 -------------------------------------------------------------------------
+# 한 trajectory의 long, lat, elev, spd 등을 시각화 하는 함수 입니다.
+# x축과 y축으로 쓰일 값을 입력 받아, scatter plot을 그려줍니다.
+
+draw_trajectory_eda <- function(indiv_df, col1, col2, fig_name){
+  
+  indiv_df <- data.frame(indiv_df)
+  
+  x_data <- indiv_df[[col1]]
+  y_data <- indiv_df[[col2]]
+  
+  # -----------------------------
+  # 🔹 Label 자동 변환 함수
+  # -----------------------------
+  convert_label <- function(colname){
+    
+    if(tolower(colname) == "time"){
+      return("Time (hour)")
+    }
+    
+    if(colname %in% c("spd2D", "spd3D")){
+      return(paste0(colname, " (km/h)"))
+    }
+    
+    if(colname == "elev"){
+      return("elev (m)")
+    }
+    
+    return(colname)
+  }
+  
+  x_label <- convert_label(col1)
+  y_label <- convert_label(col2)
+  
+  # -----------------------------
+  # 🔹 time 처리 (POSIXct 변환)
+  # -----------------------------
+  if(tolower(col1) == "time"){
+    x_data <- as.POSIXct(x_data)
+  }
+  
+  if(tolower(col2) == "time"){
+    y_data <- as.POSIXct(y_data)
+  }
+  
+  df_plot <- data.frame(x = x_data, y = y_data)
+  
+  p <- ggplot(data = df_plot, aes(x = x, y = y)) + 
+    geom_point() +
+    theme_minimal() +
+    labs(
+      x = x_label, 
+      y = y_label, 
+      caption = fig_name
+    ) +
+    theme(
+      text = element_text(family = "TimesNewer"),
+      axis.title.x = element_text(size = 18, face = "bold"),
+      axis.title.y = element_text(size = 18, face = "bold"),
+      axis.text.x = element_text(size = 15),
+      axis.text.y = element_text(size = 15),
+      plot.caption = element_text(size = 18, face = "bold", hjust = 0.5)
+    )
+  
+  # -----------------------------
+  # 🔹 time tick을 hour만 표시
+  # -----------------------------
+  if(tolower(col1) == "time"){
+    p <- p + scale_x_datetime(
+      date_labels = "%H",
+      date_breaks = "1 hour"
+    )
+  }
+  
+  if(tolower(col2) == "time"){
+    p <- p + scale_y_datetime(
+      date_labels = "%H",
+      date_breaks = "1 hour"
+    )
+  }
+  
+  # -----------------------------
+  # 🔹 Long / Lat일 경우 tick 3개만
+  # -----------------------------
+  if(col1 %in% c("longitude", "latitude")){
+    p <- p + scale_x_continuous(n.breaks = 3)
+  }
+  
+  if(col2 %in% c("longitude", "latitude")){
+    p <- p + scale_y_continuous(n.breaks = 3)
+  }
+  
+  return(p)
+}
+
+
+indivNum <- 297 # 그림 그릴 개인의 번호
+spd3D <- draw_trajectory_eda(RDS[[indivNum]], "time", "spd3D", "(f) spd3D")
+spd2D <- draw_trajectory_eda(RDS[[indivNum]], "time", "spd2D", "(e) spd2D")
+latitude <- draw_trajectory_eda(RDS[[indivNum]], "time", "latitude", "(b) Latitude")
+longitude <- draw_trajectory_eda(RDS[[indivNum]], "time", "longitude", "(a) Longitude")
+elev <- draw_trajectory_eda(RDS[[indivNum]], "time", "elev", "(c) Elevation")
+longlat <- draw_trajectory_eda(RDS[[indivNum]], "longitude", "latitude", "(d) Long. vs Lat.")
+
+# png("eda-297.png", width = 900, height = 600)
+grid.arrange(
+  longitude, latitude, elev,
+  nullGrob(), nullGrob(), nullGrob(),  # 🔹 빈 행
+  longlat, spd2D, spd3D,
+  nrow = 3, ncol = 3,
+  heights = c(1, 0.05, 1)  # 🔹 가운데 행 높이 조절
+)
+# dev.off()
