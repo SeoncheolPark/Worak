@@ -7,9 +7,9 @@
 source("filtering-functions.R")
 
 # ── 입력 경로 ─────────────────────────────────────────────────────────────────
-TRAJ_RDS <- "C:/Users/erich/Dropbox/Worak/IndividualWorak.RDS"
-INFO_CSV <- "C:/Users/erich/Dropbox/Worak/personalinfo.csv"
-OUT_RDS  <- "C:/Users/erich/Desktop/학부/2024 학술제/lastRDS.rds"
+TRAJ_RDS <- "write/your/path/to/IndividualWorak.RDS"
+INFO_CSV <- "write/your/path/to/personalinfo.csv"
+OUT_RDS  <- "write/your/path/to/lastRDS.rds"
 
 # ── 파라미터 ──────────────────────────────────────────────────────────────────
 SPEED_THRESHOLD    <- 10    # 최고 3D속도 상한 (km/h)
